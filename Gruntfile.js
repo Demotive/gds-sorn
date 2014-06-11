@@ -1,7 +1,37 @@
 module.exports = function(grunt) {
 
+    function pad(n) {
+        return (n < 10) ? ("0" + n) : n;
+    }
+
+    var tStart = new Date();
+    tStart.setDate(tStart.getDate() - 1);
+
+    var startStr = tStart.getFullYear() + '-' + (pad(tStart.getMonth() + 1)) + '-' + pad(tStart.getDate());
+
+    var globalConfig = {
+        months: [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August",
+          "September",
+          "October",
+          "November",
+          "December"
+        ],
+        dateCollected: tStart,
+        sorn: 'https://www.performance.service.gov.uk/data/sorn/realtime?start_at=' + startStr + 'T00%3A00%3A00%2B00%3A00&end_at=' + startStr + 'T23%3A59%3A59%2B00%3A00',
+    };
+
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
+
+        globalConfig: globalConfig,
 
         // CSS
         sass: {
@@ -93,7 +123,7 @@ module.exports = function(grunt) {
         },
 
         curl: {
-            'public/data/sorn-users.json': 'https://www.performance.service.gov.uk/data/sorn/realtime?sort_by=_timestamp%3Adescending&limit=5',
+            'public/data/sorn-users.json': '<%= globalConfig.sorn %>',
             'public/data/satisfaction.json': 'https://www.performance.service.gov.uk/data/vehicle-licensing/customer-satisfaction?limit=1&sort_by=_id%3Adescending'
         },
 
@@ -147,25 +177,8 @@ module.exports = function(grunt) {
         var newSrc = splitSrc[0] + '\n' + allTheThings + '\n' + '<script type="text/javascript">' + splitSrc[1];
 
         // add in some small print
-        var dateCollected = new Date();
-
-        var months = [
-          "January",
-          "February",
-          "March",
-          "April",
-          "May",
-          "June",
-          "July",
-          "August",
-          "September",
-          "October",
-          "November",
-          "December"
-        ];
-
-        var small = '<small class="offline-demo">This offline demo uses data collected on ';
-        small += dateCollected.getDate() + ' ' + months[dateCollected.getMonth()] + ' ' + dateCollected.getFullYear();
+        var small = '<small class="offline-demo">This offline demo uses data from ';
+        small += globalConfig.dateCollected.getDate() + ' ' + globalConfig.months[globalConfig.dateCollected.getMonth()] + ' ' + globalConfig.dateCollected.getFullYear();
         small += '</small>';
 
         var landmark = 'Powered by www.gov.uk/performance';
