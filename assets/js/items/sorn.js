@@ -37,16 +37,12 @@ var sorn = {
 
   loadSatisfaction: function() {
     loadUrl = sorn.urlSatisfaction;
-    if (typeof offline !== 'undefined') {
-      sorn.renderSatisfaction(satisfaction_json);
-      return;
-    }
     $.ajax({
       dataType: 'json',
       cache: false,
       url: loadUrl,
       success: function(d) {
-        sorn.renderSatisfaction(d);
+        renderSatisfaction(d);
       }
     });
   },
